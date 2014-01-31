@@ -483,11 +483,13 @@ ad_proc -public im_sysconfig_load_configuration { file } {
 ad_proc -public im_sysconfig_change_server { 
     -server_path
     -server_url
+    -system_owner
 } {
     Allows moving a server to a different location. This will change the most typical parameters when you copy e.g. the database from production to staging
 } {
 
     parameter::set_from_package_key -package_key acs-kernel -parameter "SystemURL" -value $server_url
+    parameter::set_from_package_key -package_key acs-kernel -parameter "SystemOwner" -value $system_owner
 
     parameter::set_from_package_key -package_key intranet-core -parameter "BackupBasePathUnix" -value "${server_path}/filestorage/backup"
     parameter::set_from_package_key -package_key intranet-filestorage -parameter "BugBasePathUnix" -value "${server_path}/filestorage/bugs"
