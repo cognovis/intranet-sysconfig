@@ -484,6 +484,7 @@ ad_proc -public im_sysconfig_change_server {
     -server_path
     -server_url
     -system_owner
+    -develop:boolean
 } {
     Allows moving a server to a different location. This will change the most typical parameters when you copy e.g. the database from production to staging
 } {
@@ -501,5 +502,12 @@ ad_proc -public im_sysconfig_change_server {
     parameter::set_from_package_key -package_key intranet-filestorage -parameter "UserBasePathUnix" -value "${server_path}/filestorage/users"
     parameter::set_from_package_key -package_key intranet-filestorage -parameter "CostBasePathUnix" -value "${server_path}/filestorage/costs"
     parameter::set_from_package_key -package_key intranet-invoices -parameter "InvoiceTemplatePathUnix" -value "${server_path}/filestorage/templates"
-    parameter::set_from_package_key -package_key intranet-mail-import -parameter "MailDir" -value "${server_path}/maildir"
+    catch {parameter::set_from_package_key -package_key intranet-mail-import -parameter "MailDir" -value "${server_path}/maildir"}
+    
+    # Set parameters for redirecting mail
+    if {$develop_p} {
+	parameter::set_from_package_key -package_key acs-mail-lite -parameter "EmailDeliveryMode" -value "redirect"
+	parameter::set_from_package_key -package_key acs-mail-lite -parameter "EmailRedirectTo" -value "$system_owner"
+	parameter::set_from_package_key -package_key xotcl-core -parameter "NslogRedirector" -value "1"
+    }
 }
